@@ -1,4 +1,4 @@
-module github.com/go-do/godo
+module github.com/kennek4/godo
 
 go 1.23.2
 
