@@ -1,3 +1,6 @@
+# Github
+.github
+
 # Binaries for programs and plugins
 ./build
 *.exe
