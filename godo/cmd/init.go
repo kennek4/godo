@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 */
 package cmd
 
@@ -47,13 +47,28 @@ func initGodo() error {
 		return fmt.Errorf("godo is already initialized in this directory")
 	}
 
-	// Initialize todo
+	// Create files
+	err = createFiles()
+	if err != nil {
+		return err
+	}
+
+	// Add files to .gitignore (if present)
+	err = addToGitIgnore()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createFiles() error {
 	todoFile = "todos.json"
 
 	newDirPath := fmt.Sprintf("%s.godo", todoDir)
 
 	// Create new .godo directory
-	err = os.Mkdir(newDirPath, 0777)
+	err := os.Mkdir(newDirPath, 0777)
 	if err != nil && !os.IsExist(err) {
 		panic(err)
 	}
@@ -76,4 +91,8 @@ func initGodo() error {
 	}
 
 	return nil
+}
+
+func addToGitIgnore() {
+
 }
