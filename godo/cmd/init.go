@@ -35,7 +35,6 @@ func init() {
 
 	initCmd.PersistentFlags().StringVarP(&todoDir, "directory", "d", "./", `the directory in which godo will work in. 
 																by default this will use the current working directory`)
-
 	// Bind Flags to Viper
 	viper.BindPFlag("directory", initCmd.PersistentFlags().Lookup("directory"))
 }
@@ -46,35 +45,35 @@ func initGodo() error {
 	if err == nil {
 		// go-do is already initialized
 		return fmt.Errorf("godo is already initialized in this directory")
-	} else {
-		// go-do is not initialized
-
-		todoFile = "todos.json"
-
-		newDirPath := fmt.Sprintf("%s.godo", todoDir)
-
-		// Create new .godo directory
-		err := os.Mkdir(newDirPath, 0777)
-		if err != nil && !os.IsExist(err) {
-			panic(err)
-		}
-
-		newDirPtr, err := syscall.UTF16PtrFromString(newDirPath)
-		if err != nil {
-			return err
-		}
-
-		// Set .godo to HIDDEN
-		err = syscall.SetFileAttributes(newDirPtr, syscall.FILE_ATTRIBUTE_HIDDEN)
-		if err != nil {
-			return err
-		}
-
-		_, err = os.Create(todoFile)
-		if err != nil {
-			return err // File could not be created
-		}
-
-		return nil
 	}
+
+	// Initialize todo
+	todoFile = "todos.json"
+
+	newDirPath := fmt.Sprintf("%s.godo", todoDir)
+
+	// Create new .godo directory
+	err = os.Mkdir(newDirPath, 0777)
+	if err != nil && !os.IsExist(err) {
+		panic(err)
+	}
+
+	newDirPtr, err := syscall.UTF16PtrFromString(newDirPath)
+	if err != nil {
+		return err
+	}
+
+	// Set .godo to HIDDEN
+	err = syscall.SetFileAttributes(newDirPtr, syscall.FILE_ATTRIBUTE_HIDDEN)
+	if err != nil {
+		return err
+	}
+
+	newFile := fmt.Sprintf("%s%s", todoDir, todoFile)
+	_, err = os.Create(newFile)
+	if err != nil {
+		return err // File could not be created
+	}
+
+	return nil
 }
