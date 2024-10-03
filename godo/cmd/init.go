@@ -54,11 +54,6 @@ func initGodo() error {
 	}
 
 	// Add files to .gitignore (if present)
-	err = addToGitIgnore()
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -91,8 +86,4 @@ func createFiles() error {
 	}
 
 	return nil
-}
-
-func addToGitIgnore() {
-
 }
