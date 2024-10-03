@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/cmd/new/subcmds"
 	"github.com/spf13/cobra"
 )
 
@@ -44,6 +43,4 @@ Example:
 
 func init() {
 	cmd.RootCmd.AddCommand(newCmd)
-	newCmd.AddCommand(subcmds.GroupCmd)
-	newCmd.AddCommand(subcmds.TaskCmd)
 }

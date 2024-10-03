@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package subcmds
+package new
 
 import (
 	"fmt"
@@ -11,8 +11,8 @@ import (
 
 var groupName string
 
-// groupCmd represents the group command
-var GroupCmd = &cobra.Command{
+// groupCmd represents the group command and is a subcommand of new
+var groupCmd = &cobra.Command{
 	Use:   "group",
 	Short: "Creates a task group",
 	Long: `
@@ -32,5 +32,6 @@ in quotation marks (such as "" or '').
 }
 
 func init() {
-	GroupCmd.PersistentFlags().StringVarP(&groupName, "name", "n", "", "name of the task group")
+	groupCmd.PersistentFlags().StringVarP(&groupName, "name", "n", "", "name of the task group")
+	newCmd.AddCommand(groupCmd)
 }

@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package subcmds
+package new
 
 import (
 	"fmt"
@@ -11,8 +11,8 @@ import (
 
 var taskName string
 
-// taskCmd represents the task command
-var TaskCmd = &cobra.Command{
+// taskCmd represents the task command and is a subcommand of new
+var taskCmd = &cobra.Command{
 	Use:   "task",
 	Short: "Creates a task",
 	Long: `
@@ -37,5 +37,6 @@ in quotation marks (such as "" or '').
 }
 
 func init() {
-	TaskCmd.PersistentFlags().StringVarP(&taskName, "name", "n", "", "name of the task")
+	taskCmd.PersistentFlags().StringVarP(&taskName, "name", "n", "", "name of the task")
+	newCmd.AddCommand(taskCmd)
 }
