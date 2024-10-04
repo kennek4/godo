@@ -4,13 +4,20 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package new
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 
-	// "github.com/kennek4/godo/cmd"
+	"github.com/kennek4/godo/cmd"
 	"github.com/spf13/cobra"
 )
 
-var taskName string
+var (
+	taskName    string
+	taskDetails string
+)
 
 // taskCmd represents the task command and is a subcommand of new
 var taskCmd = &cobra.Command{
@@ -18,30 +25,68 @@ var taskCmd = &cobra.Command{
 	Short: "Creates a task",
 	Long: `
 
-Creates a task that is placed under the current
-working task group. 
+Creates a task with a name and description 
 
-The task can be placed into a different
-task group if one is provided by using
-the following flag:
+You do not need quotation marks if your arguments
+do not have any spaces
 
-	-g NAME_OF_TASK_GROUP
-
-The arguments provided do not need to be surrounded 
-in quotation marks (such as "" or '').
-
-	`,
-	Args: cobra.MinimumNArgs(1),
+`,
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("task called with arg: %s", args[0])
+		taskName = args[0]
+		taskDetails = args[1]
+		createTask()
 	},
 }
 
-func createTask() {
+type Task struct {
+	TaskID      int
+	TaskName    string
+	TaskDetails string
+	IsCompleted bool
+}
 
+func createID() (id int, err error) {
+	// Count how many tasks already exist
+	pattern := filepath.Join(cmd.GodoPath, "*.txt")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return 0, err
+	}
+
+	return len(files) + 1, nil
+}
+
+func createTask() error {
+	taskItem := Task{}
+
+	taskID, err := createID()
+	if err != nil {
+		return err
+	}
+
+	// Set fields
+	taskItem.TaskID = taskID
+	taskItem.TaskName = taskName
+	taskItem.TaskDetails = taskDetails
+	taskItem.IsCompleted = false
+
+	task, err := json.MarshalIndent(taskItem, "", "\t")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fileName := fmt.Sprintf(".godo/Task_%d.json", taskID)
+	err = os.WriteFile(fileName, task, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func init() {
 	taskCmd.PersistentFlags().StringVarP(&taskName, "name", "n", "", "name of the task")
+	taskCmd.PersistentFlags().StringVarP(&taskDetails, "details", "d", "", "details of the task")
 	newCmd.AddCommand(taskCmd)
 }
