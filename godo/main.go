@@ -7,6 +7,7 @@ import (
 	"github.com/kennek4/godo/cmd"
 	_ "github.com/kennek4/godo/cmd/init"
 	_ "github.com/kennek4/godo/cmd/new"
+	_ "github.com/kennek4/godo/cmd/task"
 )
 
 func main() {
