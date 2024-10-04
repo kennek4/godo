@@ -27,4 +27,4 @@ go.work.sum
 
 # godo
 .godo
-todos.json
+.godo/
