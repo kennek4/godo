@@ -46,9 +46,9 @@ type Task struct {
 	IsCompleted bool
 }
 
-func createID() (id int, err error) {
+func createID() (taskID int, err error) {
 	// Count how many tasks already exist
-	pattern := filepath.Join(cmd.GodoPath, "*.txt")
+	pattern := filepath.Join(cmd.GodoPath+".godo", "*.json")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		return 0, err
