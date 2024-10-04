@@ -39,6 +39,6 @@ func Execute() {
 }
 
 func init() {
-	viper.SetDefault("godoPath", "./.godo")
-	viper.SetDefault("todoFile", "todos.json")
+	currWd, _ := os.Getwd()
+	viper.SetDefault("godoPath", currWd)
 }
