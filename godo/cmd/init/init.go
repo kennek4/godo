@@ -6,7 +6,6 @@ package init
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"syscall"
 
 	"github.com/kennek4/godo/cmd"
@@ -46,20 +45,19 @@ var initCmd = &cobra.Command{
 func initGodo(currWd string) error {
 
 	// Define where .godo will be placed
-	godoDir := filepath.Join(currWd, ".godo")
 
-	if _, err := os.Stat(godoDir); err == nil {
+	if _, err := os.Stat(currWd); err == nil {
 		// go-do is already initialized
 		return fmt.Errorf("godo is already initialized in this directory")
 	}
 
 	// Create new .godo directory
-	err := os.MkdirAll(godoDir, 0777)
+	err := os.Mkdir(currWd, 0777)
 	if err != nil && os.IsNotExist(err) {
 		return err
 	}
 
-	newDirPtr, err := syscall.UTF16PtrFromString(godoDir)
+	newDirPtr, err := syscall.UTF16PtrFromString(currWd)
 	if err != nil {
 		return err
 	}
@@ -71,7 +69,7 @@ func initGodo(currWd string) error {
 	}
 
 	// Initialize DB in .godo
-	err = util.InitDB(cmd.CurrentWorkingDirectory)
+	err = util.InitDB(cmd.GodoDir)
 	if err != nil {
 		return err
 	}
