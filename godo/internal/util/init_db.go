@@ -4,7 +4,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func InitDB(dbDir string) (err error) {
+func InitDB(dbDir *string) (err error) {
 
 	// Get DB
 	database, err := GetDB(dbDir)
@@ -16,12 +16,11 @@ func InitDB(dbDir string) (err error) {
 	defer database.Close()
 
 	const table string = `
-	"CREATE TABLE IF NOT EXISTS godo (
+	CREATE TABLE IF NOT EXISTS godo (
 		id INTEGER NOT NULL PRIMARY KEY, 
 		title TEXT NOT NULL,
 		description TEXT,
-		isComplete BOOLEAN NOT NULL DEFAULT FALSE)"
-	`
+		isComplete BOOLEAN NOT NULL DEFAULT FALSE);`
 
 	// Create a table in the db
 	statement, err := database.Prepare(table)

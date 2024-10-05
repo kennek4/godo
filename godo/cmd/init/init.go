@@ -30,7 +30,7 @@ var initCmd = &cobra.Command{
 
 		switch {
 		case choice: // User accepted prompt
-			err = initGodo(cmd.GodoDir)
+			err = initGodo(&cmd.GodoDir)
 			if err != nil {
 				return err
 			}
@@ -42,22 +42,22 @@ var initCmd = &cobra.Command{
 	},
 }
 
-func initGodo(currWd string) error {
+func initGodo(godoDir *string) error {
 
 	// Define where .godo will be placed
 
-	if _, err := os.Stat(currWd); err == nil {
+	if _, err := os.Stat(*godoDir); err == nil {
 		// go-do is already initialized
 		return fmt.Errorf("godo is already initialized in this directory")
 	}
 
 	// Create new .godo directory
-	err := os.Mkdir(currWd, 0777)
+	err := os.Mkdir(*godoDir, 0777)
 	if err != nil && os.IsNotExist(err) {
 		return err
 	}
 
-	newDirPtr, err := syscall.UTF16PtrFromString(currWd)
+	newDirPtr, err := syscall.UTF16PtrFromString(*godoDir)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func initGodo(currWd string) error {
 	}
 
 	// Initialize DB in .godo
-	err = util.InitDB(cmd.GodoDir)
+	err = util.InitDB(godoDir)
 	if err != nil {
 		return err
 	}

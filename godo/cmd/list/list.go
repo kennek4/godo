@@ -33,7 +33,7 @@ The following command will show all tasks under the "Code" category.
 
 func listTasks(taskTable string) error {
 
-	db, err := util.GetDB(cmd.GodoDbPath)
+	db, err := util.GetDB(&cmd.GodoDir)
 	if err != nil {
 		return err
 	}

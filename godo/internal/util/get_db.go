@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 )
 
-func GetDB(dbDir string) (database *sql.DB, err error) {
+func GetDB(dbDir *string) (database *sql.DB, err error) {
 
-	dbPath := filepath.Join(dbDir, "godo.db")
+	dbPath := filepath.Join(*dbDir, "godo.db")
 
 	database, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
