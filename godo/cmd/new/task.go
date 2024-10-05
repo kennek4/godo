@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kennek4/godo/cmd"
 	"github.com/spf13/cobra"
 )
 
@@ -48,7 +47,7 @@ type Task struct {
 
 func createID() (taskID int, err error) {
 	// Count how many tasks already exist
-	pattern := filepath.Join(cmd.GodoPath+".godo", "*.json")
+	pattern := filepath.Join(".godo", "*.json")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		return 0, err
