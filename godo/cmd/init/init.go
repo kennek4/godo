@@ -6,6 +6,7 @@ package init
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"syscall"
 
 	"github.com/kennek4/godo/cmd"
@@ -21,24 +22,20 @@ var initCmd = &cobra.Command{
 	Long:  "This command will initialize a godo into the current directory in a hidden folder called .godo",
 	Args:  cobra.ExactArgs(0),
 	RunE: func(command *cobra.Command, args []string) error {
-		if cmd.IsInitalized {
-			return fmt.Errorf("a godo instance is already intialized in %s", cmd.GodoPath)
-		}
 
-		prompt := fmt.Sprintf("godo will initialize in: %s\ngodo will create any necessary directories\n", cmd.GodoPath)
+		prompt := "godo requires a sqlite database\n"
 		choice, err := util.PromptUser(prompt)
 		if err != nil {
 			return err
 		}
 
-		if choice {
-			// User accepted prompt
-			err = initGodo(cmd.GodoPath)
+		switch {
+		case choice: // User accepted prompt
+			err = initGodo(cmd.GodoDir)
 			if err != nil {
 				return err
 			}
-		} else {
-			// User denied prompt
+		case !choice: // User denied prompt
 			return fmt.Errorf("godo requires a directory to work, please try again")
 		}
 
@@ -46,42 +43,46 @@ var initCmd = &cobra.Command{
 	},
 }
 
-func init() {
-	cmd.RootCmd.AddCommand(initCmd)
-	initCmd.PersistentFlags().StringVarP(&cmd.GodoPath, "directory", "d", "./", "the directory in which godo will work in")
-	// Bind Flags to Viper
-	viper.BindPFlag("directory", initCmd.PersistentFlags().Lookup("directory"))
-}
-
-func initGodo(dirPath string) error {
+func initGodo(currWd string) error {
 
 	// Define where .godo will be placed
-	godoPath := fmt.Sprintf("%s/.godo", dirPath)
+	godoDir := filepath.Join(currWd, ".godo")
 
-	if _, err := os.Stat(godoPath); err == nil {
+	if _, err := os.Stat(godoDir); err == nil {
 		// go-do is already initialized
 		return fmt.Errorf("godo is already initialized in this directory")
 	}
 
 	// Create new .godo directory
-	err := os.MkdirAll(godoPath, 0777)
+	err := os.MkdirAll(godoDir, 0777)
 	if err != nil && os.IsNotExist(err) {
 		return err
 	}
 
-	// Set .godo to HIDDEN
-	newDirPtr, err := syscall.UTF16PtrFromString(godoPath)
+	newDirPtr, err := syscall.UTF16PtrFromString(godoDir)
 	if err != nil {
 		return err
 	}
 
+	// Set directory to hidden
 	err = syscall.SetFileAttributes(newDirPtr, syscall.FILE_ATTRIBUTE_HIDDEN)
 	if err != nil {
 		return err
 	}
 
-	cmd.IsInitalized = true
+	// Initialize DB in .godo
+	err = util.InitDB(cmd.CurrentWorkingDirectory)
+	if err != nil {
+		return err
+	}
 
 	// Add files to .gitignore (if present)
 	return nil
+}
+
+func init() {
+	cmd.RootCmd.AddCommand(initCmd)
+
+	// Bind Flags to Viper
+	viper.BindPFlag("directory", initCmd.PersistentFlags().Lookup("directory"))
 }
