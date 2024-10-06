@@ -50,4 +50,5 @@ func init() {
 
 	viper.SetEnvPrefix("godo")
 	viper.BindEnv("group")
+	viper.AutomaticEnv()
 }
