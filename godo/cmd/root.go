@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -46,4 +47,7 @@ func init() {
 	CurrentWorkingDirectory = currWd
 	GodoDir = filepath.Join(currWd, ".godo")
 	GodoDbPath = filepath.Join(GodoDir, "godo.db")
+
+	viper.SetEnvPrefix("godo")
+	viper.BindEnv("group")
 }

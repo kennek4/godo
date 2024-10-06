@@ -42,8 +42,9 @@ func createTask(title *string, description *string) error {
 	}
 
 	defer db.Close()
-
-	err = dbdriver.InsertTaskInDB(title, description, &cmd.GodoDir)
+	var tasks string
+	tasks = "cheese"
+	err = dbdriver.InsertTaskInDB(title, description, &tasks, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}

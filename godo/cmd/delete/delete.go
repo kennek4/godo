@@ -53,7 +53,7 @@ The following example will delete a task with the title "Review Code"
 }
 
 func deleteTask(quertyType dbdriver.DeleteType, thingToDelete *interface{}) error {
-	err := dbdriver.DeleteTaskInDB(quertyType, "godo", thingToDelete, &cmd.GodoDir)
+	err := dbdriver.DeleteTaskInDB(quertyType, "cheese", thingToDelete, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}
