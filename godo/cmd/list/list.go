@@ -5,7 +5,7 @@ package list
 
 import (
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util"
+	"github.com/kennek4/godo/internal/util/dbdriver"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +31,7 @@ The following command will show all tasks under the "Code" category.
 
 func listTasks(table *string) error {
 
-	err := util.ListTasksInTable(table, &cmd.GodoDir)
+	err := dbdriver.ListTasksInTable(table, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}

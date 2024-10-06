@@ -5,7 +5,7 @@ package delete
 
 import (
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util"
+	"github.com/kennek4/godo/internal/util/dbdriver"
 	"github.com/spf13/cobra"
 )
 
@@ -52,8 +52,8 @@ The following example will delete a task with the title "Review Code"
 	},
 }
 
-func deleteTask(quertyType util.DeleteType, thingToDelete *interface{}) error {
-	err := util.DeleteTaskInDB(quertyType, "godo", thingToDelete, &cmd.GodoDir)
+func deleteTask(quertyType dbdriver.DeleteType, thingToDelete *interface{}) error {
+	err := dbdriver.DeleteTaskInDB(quertyType, "godo", thingToDelete, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}

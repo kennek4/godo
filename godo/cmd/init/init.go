@@ -6,10 +6,11 @@ package init
 import (
 	"fmt"
 	"os"
-	"syscall"
 
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util"
+	"github.com/kennek4/godo/internal/util/consolehelper"
+	"github.com/kennek4/godo/internal/util/dbdriver"
+	"github.com/kennek4/godo/internal/util/filehelper"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +35,7 @@ var initCmd = &cobra.Command{
 			err = startInit(true)
 		default:
 			prompt := "godo requires a sqlite database\n"
-			choice, err = util.PromptUser(&prompt)
+			choice, err = consolehelper.PromptUser(&prompt)
 			if err != nil {
 				return err
 			}
@@ -82,19 +83,13 @@ func initGodo(godoDir *string) error {
 		return err
 	}
 
-	newDirPtr, err := syscall.UTF16PtrFromString(*godoDir)
-	if err != nil {
-		return err
-	}
-
-	// Set directory to hidden
-	err = syscall.SetFileAttributes(newDirPtr, syscall.FILE_ATTRIBUTE_HIDDEN)
+	err = filehelper.MakeDirHidden(godoDir)
 	if err != nil {
 		return err
 	}
 
 	// Initialize DB in .godo
-	err = util.InitDB(godoDir)
+	err = dbdriver.InitDB(godoDir)
 	if err != nil {
 		return err
 	}
