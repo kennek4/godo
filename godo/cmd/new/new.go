@@ -13,7 +13,7 @@ import (
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:   "new",
-	Short: "Creates a new task or task group",
+	Short: "Creates a new task",
 	Long: `
 
 This command creates either a task or task group.
@@ -21,8 +21,9 @@ If no task group is explicitly given, the task
 will be added to a default task group
 
 Example:
-	godo new task "Add docstrings" // Creates a task in the default task group
-	godo new task "Create tests for this file" "tests" // Creates a task in the tests task group
+
+This will create a new task with the title 
+> godo new task "Add docstrings"
 	
 `,
 	Args: func(cmd *cobra.Command, args []string) error {
