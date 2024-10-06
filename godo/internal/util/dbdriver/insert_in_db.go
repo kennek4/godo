@@ -1,4 +1,4 @@
-package util
+package dbdriver
 
 func InsertTaskInDB(title *string, description *string, dbDir *string) error {
 

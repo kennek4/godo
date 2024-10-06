@@ -1,4 +1,4 @@
-package util
+package dbdriver
 
 import (
 	_ "github.com/mattn/go-sqlite3"

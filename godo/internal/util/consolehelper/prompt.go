@@ -1,4 +1,4 @@
-package util
+package consolehelper
 
 import (
 	"bufio"
