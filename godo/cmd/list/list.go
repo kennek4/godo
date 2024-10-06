@@ -4,8 +4,6 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package list
 
 import (
-	"fmt"
-
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util"
 	"github.com/spf13/cobra"
@@ -27,36 +25,15 @@ The following command will show all tasks under the "Code" category.
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskTable := args[0]
-		listTasks(taskTable)
+		listTasks(&taskTable)
 	},
 }
 
-func listTasks(taskTable string) error {
+func listTasks(table *string) error {
 
-	db, err := util.GetDB(&cmd.GodoDir)
+	err := util.ListTasksInTable(table, &cmd.GodoDir)
 	if err != nil {
 		return err
-	}
-
-	defer db.Close()
-
-	prep := fmt.Sprintf("INSERT INTO %s (title, description) VALUES (?, ?)", taskTable)
-	statement, err := db.Prepare(prep)
-	if err != nil {
-		return err
-	}
-
-	statement.Exec("Make Cookies", "Make by tonight!")
-
-	query := fmt.Sprintf("SELECT id, title, description FROM %s", taskTable)
-	rows, _ := db.Query(query)
-
-	var id int
-	var title string
-	var description string
-	for rows.Next() {
-		rows.Scan(&id, &title, &description)
-		fmt.Printf("[%d] %s\n%s\n", id, title, description)
 	}
 
 	return nil
