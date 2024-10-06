@@ -29,12 +29,12 @@ do not have any spaces.
 	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskTitle = args[0]
-		taskDescription = args[1]
+		taskDescription = "\t" + args[1]
 		createTask(&taskTitle, &taskDescription)
 	},
 }
 
-func createTask(taskTitle *string, taskDescription *string) error {
+func createTask(title *string, description *string) error {
 
 	db, err := util.GetDB(&cmd.GodoDir)
 	if err != nil {
@@ -43,7 +43,10 @@ func createTask(taskTitle *string, taskDescription *string) error {
 
 	defer db.Close()
 
-
+	err = util.InsertTaskInDB(title, description, &cmd.GodoDir)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
