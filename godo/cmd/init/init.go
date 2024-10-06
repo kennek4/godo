@@ -11,7 +11,6 @@ import (
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // initCmd represents the init command
@@ -23,7 +22,7 @@ var initCmd = &cobra.Command{
 	RunE: func(command *cobra.Command, args []string) error {
 
 		prompt := "godo requires a sqlite database\n"
-		choice, err := util.PromptUser(prompt)
+		choice, err := util.PromptUser(&prompt)
 		if err != nil {
 			return err
 		}
@@ -80,7 +79,4 @@ func initGodo(godoDir *string) error {
 
 func init() {
 	cmd.RootCmd.AddCommand(initCmd)
-
-	// Bind Flags to Viper
-	viper.BindPFlag("directory", initCmd.PersistentFlags().Lookup("directory"))
 }
