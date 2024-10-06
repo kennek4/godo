@@ -2,7 +2,11 @@ package dbdriver
 
 import (
 	"fmt"
-	"strconv"
+)
+
+const (
+	incomplete = ' '
+	complete   = '✔'
 )
 
 func ListTasksInTable(tableName *string, dbDir *string) error {
@@ -19,18 +23,7 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 
 	defer db.Close()
 
-	count, err := db.Exec("SELECT COUNT(*) from " + (*tableName))
-	if err != nil {
-		return err
-	}
-
-	rowCount, err := count.RowsAffected()
-	if err != nil {
-		return err
-	}
-	fmt.Println("Task count: " + strconv.Itoa(int(rowCount)))
-
-	query := fmt.Sprintf("SELECT id, title, description FROM %s", *tableName)
+	query := fmt.Sprintf("SELECT id, title, description, isComplete FROM %s", *tableName)
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
@@ -39,9 +32,19 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 	var id int
 	var title string
 	var description string
+	var isComplete bool
 	for rows.Next() {
-		rows.Scan(&id, &title, &description)
-		fmt.Printf("[%d] %s\n%s\n", id, title, description)
+		rows.Scan(&id, &title, &description, &isComplete)
+
+		var checkBoxStatus rune
+		switch {
+		case isComplete:
+			checkBoxStatus = complete
+		case !isComplete:
+			checkBoxStatus = incomplete
+		}
+
+		fmt.Printf("[%d] %s [%c]\n%s\n", id, title, checkBoxStatus, description)
 	}
 
 	return nil // Successfully printed table
