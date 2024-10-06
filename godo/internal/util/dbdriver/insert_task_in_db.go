@@ -1,6 +1,13 @@
 package dbdriver
 
-func InsertTaskInDB(title *string, description *string, dbDir *string) error {
+import "fmt"
+
+func InsertTaskInDB(title *string, description *string, table *string, dbDir *string) error {
+
+	if title == nil || description == nil || table == nil {
+		err := fmt.Errorf("in InsertTaskInDB, a supplied argument is a nil string pointer")
+		return err
+	}
 
 	db, err := GetDB(dbDir)
 	if err != nil {
@@ -9,7 +16,8 @@ func InsertTaskInDB(title *string, description *string, dbDir *string) error {
 
 	defer db.Close()
 
-	statement, err := db.Prepare("INSERT INTO godo (title, description) VALUES (?, ?)")
+	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES (?, ?)", *table)
+	statement, err := db.Prepare(query)
 	if err != nil {
 		return err
 	}
