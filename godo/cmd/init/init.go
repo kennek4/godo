@@ -21,24 +21,50 @@ var initCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(0),
 	RunE: func(command *cobra.Command, args []string) error {
 
-		prompt := "godo requires a sqlite database\n"
-		choice, err := util.PromptUser(&prompt)
+		// Get any flags if they exist
+		confirmFlag, err := command.Flags().GetBool("confirm")
 		if err != nil {
 			return err
 		}
 
-		switch {
-		case choice: // User accepted prompt
-			err = initGodo(&cmd.GodoDir)
+		var choice bool
+
+		switch confirmFlag {
+		case true:
+			err = startInit(true)
+		default:
+			prompt := "godo requires a sqlite database\n"
+			choice, err = util.PromptUser(&prompt)
 			if err != nil {
 				return err
 			}
-		case !choice: // User denied prompt
-			return fmt.Errorf("godo requires a directory to work, please try again")
+
+			err = startInit(choice)
+		}
+
+		if err != nil {
+			return err
 		}
 
 		return nil
 	},
+}
+
+func startInit(choice bool) error {
+	var err error
+
+	switch {
+	case choice: // User accepted prompt
+		err = initGodo(&cmd.GodoDir)
+	case !choice: // User denied prompt
+		return fmt.Errorf("godo requires a sqlite database to work, please try again")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func initGodo(godoDir *string) error {
@@ -79,4 +105,5 @@ func initGodo(godoDir *string) error {
 
 func init() {
 	cmd.RootCmd.AddCommand(initCmd)
+	initCmd.Flags().BoolP("confirm", "c", false, "Used to accept the prompt without it being shown")
 }
