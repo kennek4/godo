@@ -28,6 +28,11 @@ func getQueryString(queryType DeleteType, dbTable string, thingToDelete *interfa
 
 func DeleteTaskInDB(queryType DeleteType, dbTable string, thingToDelete *interface{}, dbDir *string) error {
 
+	if thingToDelete == nil {
+		err := fmt.Errorf("in DeleteTaskInDB, thingToDelete was supplied a nil interface pointer")
+		return err
+	}
+
 	db, err := GetDB(dbDir)
 	if err != nil {
 		return err

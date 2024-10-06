@@ -7,6 +7,11 @@ import (
 
 func ListTasksInTable(tableName *string, dbDir *string) error {
 
+	if tableName == nil {
+		err := fmt.Errorf("in ListTasksInTable, tableName was supplied with a nil string pointer")
+		return err
+	}
+
 	db, err := GetDB(dbDir)
 	if err != nil {
 		return err
