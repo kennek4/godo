@@ -1,12 +1,10 @@
 package envhelper
 
 import (
-	"os"
-
 	"github.com/spf13/viper"
 )
 
-func GetEnvString(variable string) (result string, err error) {
-	err = viper.Get()
-	return result, nil
+func GetGodoEnv(variable string) any {
+	result := viper.Get(variable)
+	return result
 }
