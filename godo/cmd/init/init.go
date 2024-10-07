@@ -10,6 +10,7 @@ import (
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/consolehelper"
 	"github.com/kennek4/godo/internal/util/dbdriver"
+	"github.com/kennek4/godo/internal/util/envhelper"
 	"github.com/kennek4/godo/internal/util/filehelper"
 	"github.com/spf13/cobra"
 )
@@ -28,11 +29,16 @@ var initCmd = &cobra.Command{
 			return err
 		}
 
+		defaultTable, err := command.Flags().GetString("table")
+		if err != nil {
+			return nil
+		}
+
 		var choice bool
 
 		switch confirmFlag {
 		case true:
-			err = startInit(true)
+			err = startInit(defaultTable, true)
 		default:
 			prompt := "godo requires a sqlite database\n"
 			choice, err = consolehelper.PromptUser(&prompt)
@@ -40,7 +46,7 @@ var initCmd = &cobra.Command{
 				return err
 			}
 
-			err = startInit(choice)
+			err = startInit(defaultTable, choice)
 		}
 
 		if err != nil {
@@ -51,12 +57,12 @@ var initCmd = &cobra.Command{
 	},
 }
 
-func startInit(choice bool) error {
+func startInit(defaultTable string, choice bool) error {
 	var err error
 
 	switch {
 	case choice: // User accepted prompt
-		err = initGodo(&cmd.GodoDir)
+		err = initGodo(defaultTable, &cmd.GodoDir)
 	case !choice: // User denied prompt
 		return fmt.Errorf("godo requires a sqlite database to work, please try again")
 	}
@@ -68,8 +74,11 @@ func startInit(choice bool) error {
 	return nil
 }
 
-func initGodo(godoDir *string) error {
+func initGodo(defaultTable string, godoDir *string) error {
 
+	if godoDir == nil {
+		return fmt.Errorf("in initGodo, godoDir was passed a nil string pointer")
+	}
 	// Define where .godo will be placed
 
 	if _, err := os.Stat(*godoDir); err == nil {
@@ -89,10 +98,13 @@ func initGodo(godoDir *string) error {
 	}
 
 	// Initialize DB in .godo
-	err = dbdriver.InitDB(godoDir)
+	err = dbdriver.InitDB(defaultTable, godoDir)
 	if err != nil {
 		return err
 	}
+
+	tableEnv := defaultTable
+	envhelper.SetGodoEnv("group", &tableEnv)
 
 	// Add files to .gitignore (if present)
 	return nil
@@ -101,4 +113,5 @@ func initGodo(godoDir *string) error {
 func init() {
 	cmd.RootCmd.AddCommand(initCmd)
 	initCmd.Flags().BoolP("confirm", "c", false, "Used to accept the prompt without it being shown")
+	initCmd.Flags().StringP("table", "t", "Tasks", "Used to set the default SQLite database table")
 }
