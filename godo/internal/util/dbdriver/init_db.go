@@ -4,7 +4,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func InitDB(dbDir *string) (err error) {
+func InitDB(defaultTable string, dbDir *string) (err error) {
 
 	// Get DB
 	database, err := GetDB(dbDir)
@@ -15,8 +15,6 @@ func InitDB(dbDir *string) (err error) {
 	// Close connection when this function is done
 	defer database.Close()
 
-	const defaultTable string = "Tasks"
-	
 	err = CreateTableInDB(defaultTable, dbDir)
 	if err != nil {
 		return err
