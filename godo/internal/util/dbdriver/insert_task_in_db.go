@@ -19,12 +19,12 @@ func InsertTaskInDB(title *string, description *string, table *string, dbDir *st
 	query := fmt.Sprintf("INSERT INTO %s (title, description) VALUES (?, ?)", *table)
 	statement, err := db.Prepare(query)
 	if err != nil {
-		return err
+		return fmt.Errorf("in InsertTaskInDB, something went wrong while preparing the query")
 	}
 
 	_, err = statement.Exec(*title, *description)
 	if err != nil {
-		return err
+		return fmt.Errorf("in InsertTaskInDB, something went wrong while executing the query")
 	}
 
 	// Successfully inserted task into DB
