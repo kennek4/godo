@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kennek4/godo/internal/util/envhelper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -50,5 +51,9 @@ func init() {
 
 	viper.SetEnvPrefix("godo")
 	viper.BindEnv("group")
+	viper.BindEnv("dir")
+
+	envhelper.SetGodoEnv("dir", &GodoDir)
+
 	viper.AutomaticEnv()
 }
