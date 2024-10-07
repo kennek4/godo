@@ -23,12 +23,12 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 
 	defer db.Close()
 
-	query := fmt.Sprintf("SELECT id, title, description, isComplete FROM %s", *tableName)
+	query := fmt.Sprintf("SELECT * FROM %s", *tableName)
 	rows, err := db.Query(query)
 	if err != nil {
 		return err
 	}
-
+	
 	var id int
 	var title string
 	var description string
