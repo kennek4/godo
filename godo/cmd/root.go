@@ -8,12 +8,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kennek4/godo/internal/util/envhelper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
+	cfgFile string
+
 	CurrentWorkingDirectory string
 
 	// The directory location of .godo
@@ -39,7 +40,14 @@ func Execute() {
 	}
 }
 
+func setDefaults() {
+	viper.SetDefault("group", "tasks")
+}
+
 func init() {
+	cobra.OnInitialize(initConfig)
+	setDefaults()
+
 	currWd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
@@ -48,12 +56,19 @@ func init() {
 	CurrentWorkingDirectory = currWd
 	GodoDir = filepath.Join(currWd, ".godo")
 	GodoDbPath = filepath.Join(GodoDir, "godo.db")
+}
 
-	viper.SetEnvPrefix("godo")
-	viper.BindEnv("group")
-	viper.BindEnv("dir")
+func initConfig() {
+	if cfgFile != "" {
+		viper.SetConfigFile(cfgFile)
+	} else {
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
 
-	envhelper.SetGodoEnv("dir", &GodoDir)
+		viper.AddConfigPath(home)
+		viper.SetConfigType("yaml")
+		viper.SetConfigFile(".godoCfg")
+	}
 
 	viper.AutomaticEnv()
 }

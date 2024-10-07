@@ -4,6 +4,11 @@ Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 package new
 
 import (
+	"fmt"
+
+	"github.com/kennek4/godo/cmd"
+	"github.com/kennek4/godo/internal/util/configs"
+	"github.com/kennek4/godo/internal/util/dbdriver"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +38,13 @@ do not have any spaces.
 }
 
 func createTask(title *string, description *string) error {
+
+	table := configs.GetValueFromKey("group")
+	fmt.Printf("table: %s\n", table)
+	err := dbdriver.InsertTaskInDB(title, description, &table, &cmd.GodoDir)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

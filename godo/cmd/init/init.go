@@ -8,9 +8,9 @@ import (
 	"os"
 
 	"github.com/kennek4/godo/cmd"
+	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/consolehelper"
 	"github.com/kennek4/godo/internal/util/dbdriver"
-	"github.com/kennek4/godo/internal/util/envhelper"
 	"github.com/kennek4/godo/internal/util/filehelper"
 	"github.com/spf13/cobra"
 )
@@ -103,8 +103,7 @@ func initGodo(defaultTable string, godoDir *string) error {
 		return err
 	}
 
-	tableEnv := defaultTable
-	envhelper.SetGodoEnv("group", &tableEnv)
+	configs.SetCurrentGroup(defaultTable)
 
 	// Add files to .gitignore (if present)
 	return nil
