@@ -113,5 +113,5 @@ func initGodo(defaultTable string, godoDir *string) error {
 func init() {
 	cmd.RootCmd.AddCommand(initCmd)
 	initCmd.Flags().BoolP("confirm", "c", false, "Used to accept the prompt without it being shown")
-	initCmd.Flags().StringP("table", "t", "Tasks", "Used to set the default SQLite database table")
+	initCmd.Flags().StringP("table", "t", "tasks", "Used to set the default SQLite database table")
 }
