@@ -19,7 +19,7 @@ func getQueryString(queryType DeleteType, dbTable string, thingToDelete *interfa
 	switch queryType {
 	case title:
 		query = fmt.Sprintf("%s WHERE title='%s'", query, *thingToDelete)
-	default:
+	case id:
 		query = fmt.Sprintf("%s WHERE id=%d", query, *thingToDelete)
 	}
 

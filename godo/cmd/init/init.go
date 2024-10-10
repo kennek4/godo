@@ -103,9 +103,8 @@ func initGodo(defaultTable string, godoDir *string) error {
 		return err
 	}
 
-	configs.SetCurrentGroup(defaultTable)
+	configs.CreateConfigFile(cmd.GodoDir, defaultTable)
 
-	// Add files to .gitignore (if present)
 	return nil
 }
 

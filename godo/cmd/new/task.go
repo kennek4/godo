@@ -39,9 +39,17 @@ do not have any spaces.
 
 func createTask(title *string, description *string) error {
 
-	table := configs.GetValueFromKey("group")
-	fmt.Printf("table: %s\n", table)
-	err := dbdriver.InsertTaskInDB(title, description, &table, &cmd.GodoDir)
+	fmt.Println("Hello")
+	cfgData, err := configs.GetConfig(cmd.GodoDir)
+	if err != nil {
+		return fmt.Errorf("something went wrong in fetching the config")
+	}
+	fmt.Printf("cfgData.CurrentGroup Value => %s\n", cfgData.CurrentGroup)
+
+	table := cfgData.CurrentGroup
+	fmt.Println(table)
+
+	err = dbdriver.InsertTaskInDB(title, description, &table, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}

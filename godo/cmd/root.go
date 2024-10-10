@@ -4,10 +4,12 @@ Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -22,6 +24,8 @@ var (
 
 	// This path ends in a godo.db
 	GodoDbPath string
+
+	CurrentGroup string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -45,8 +49,6 @@ func setDefaults() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-	setDefaults()
 
 	currWd, err := os.Getwd()
 	if err != nil {
@@ -56,19 +58,22 @@ func init() {
 	CurrentWorkingDirectory = currWd
 	GodoDir = filepath.Join(currWd, ".godo")
 	GodoDbPath = filepath.Join(GodoDir, "godo.db")
+
+	cobra.OnInitialize(initConfig)
+	setDefaults()
 }
 
 func initConfig() {
 	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
+
+		cfgData, err := configs.GetConfig(GodoDir)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		CurrentGroup = cfgData.CurrentGroup
+		fmt.Println(CurrentGroup)
+
 	} else {
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigFile(".godoCfg")
 	}
-
-	viper.AutomaticEnv()
 }
