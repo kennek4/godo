@@ -8,6 +8,7 @@ import (
 
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
+	"github.com/kennek4/godo/internal/util/consolehelper"
 	"github.com/kennek4/godo/internal/util/dbdriver"
 	"github.com/spf13/cobra"
 )
@@ -27,10 +28,24 @@ The following command would change the godo group to one named "Code"
 		tables = dbdriver.ListTablesInDB(&cmd.GodoDir)
 		groupName := args[0]
 
-		if !doesGroupExist(groupName) { // Given argument is not a table in the DB
-			err := fmt.Errorf("the table, %s, does not exist in the godo db, please check your spelling or try again", groupName)
-			return err
-		} else { // Given argument exists
+		switch doesGroupExist(groupName){
+		case false:
+			prompt := fmt.Sprintf("The table, %s, does not exist in the godo db.\nWould you like to create a group names %s?\n", groupName, groupName)
+			choice, err := consolehelper.PromptUser(&prompt)
+			if err != nil {
+				return err
+			}
+
+			if choice { // Create new group
+				err = dbdriver.CreateTableInDB(groupName, &cmd.GodoDir)
+				if err != nil {
+					return err
+				}
+			} else {
+				return fmt.Errorf("the given group was not found, please try again")
+			}
+
+		case true:
 			configs.SetCurrentGroup(groupName, cmd.GodoDir) // Set new CurrentGroup
 		}
 
