@@ -11,4 +11,5 @@ This allows developers to **create**, **update**, and **delete** tasks as they w
 ### Technologies Used 🕹
 - [**Go**](https://go.dev/)
   - [**Cobra** / *A modern CLI library for Go*](https://github.com/spf13/cobra)
-  - [**Viper** / *Go configs*](https://github.com/spf13/viper)
+  - **SQLite**
+    - [**go-sqlite3** / *A sqlite3 driver*](https://github.com/mattn/go-sqlite3)
