@@ -54,9 +54,8 @@ The following example will delete a task with the title "Review Code"
 }
 
 func deleteTask(quertyType dbdriver.DeleteType, thingToDelete *interface{}) error {
-
-	defaultTable := configs.GetCurrentGroup(cmd.GodoDir)
-	err := dbdriver.DeleteTaskInDB(quertyType, defaultTable, thingToDelete, &cmd.GodoDir)
+	currentGroup := configs.GetCurrentGroup(cmd.GodoDir)
+	err := dbdriver.DeleteTaskInDB(quertyType, currentGroup, thingToDelete, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}

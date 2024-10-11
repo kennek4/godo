@@ -36,8 +36,8 @@ do not have any spaces.
 }
 
 func createTask(title *string, description *string) error {
-	table := configs.GetCurrentGroup(cmd.GodoDir)
-	err := dbdriver.InsertTaskInDB(title, description, &table, &cmd.GodoDir)
+	currentGroup := configs.GetCurrentGroup(cmd.GodoDir)
+	err := dbdriver.InsertTaskInDB(title, description, &currentGroup, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}
