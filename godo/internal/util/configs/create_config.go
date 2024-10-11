@@ -25,7 +25,7 @@ func CreateConfigFile(dirPath string, defaultTable string) error {
 		return err
 	}
 
-	err = os.WriteFile(file.Name(), data, 0777)
+	err = os.WriteFile(file.Name(), data, 0777) // Write JSON to file
 	if err != nil {
 		return err
 	}
