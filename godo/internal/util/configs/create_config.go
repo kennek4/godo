@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 )
 
-func CreateConfigFile(dirPath string, defaultTable string) error {
+func CreateConfigFile(dirPath string, defaultGroup string) error {
 
 	defaultConfig := ConfigFile{
-		CurrentGroup: defaultTable,
+		CurrentGroup: defaultGroup,
 	}
 
 	path := filepath.Join(dirPath, ".godoCfg.json")
