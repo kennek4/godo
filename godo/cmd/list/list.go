@@ -5,6 +5,8 @@ package list
 
 import (
 	"github.com/kennek4/godo/cmd"
+	"github.com/kennek4/godo/internal/util/configs"
+	"github.com/kennek4/godo/internal/util/consolehelper"
 	"github.com/kennek4/godo/internal/util/dbdriver"
 	"github.com/spf13/cobra"
 )
@@ -22,15 +24,19 @@ The following command will show all tasks under the "Code" category.
 
 > godo list Code
 `,
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		taskTable := args[0]
-		listTasks(&taskTable)
+	Args: cobra.MaximumNArgs(1),
+	Run: func(command *cobra.Command, args []string) {
+		if len(args) > 0 {
+			listTasks(&args[0])
+		} else {
+			currentGroup := configs.GetCurrentGroup(cmd.GodoDir)
+			listTasks(&currentGroup)
+		}
 	},
 }
 
 func listTasks(table *string) error {
-
+	consolehelper.ClearConsole() // Clears console
 	err := dbdriver.ListTasksInTable(table, &cmd.GodoDir)
 	if err != nil {
 		return err
