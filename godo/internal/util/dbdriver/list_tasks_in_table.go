@@ -28,7 +28,7 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	var id int
 	var title string
 	var description string
@@ -43,9 +43,13 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 		case !isComplete:
 			checkBoxStatus = incomplete
 		}
-
-		fmt.Printf("[%d] %s [%c]\n%s\n", id, title, checkBoxStatus, description)
+		fmt.Printf(`
+%d.) %s [%c]
+%s		
+`, id, title, checkBoxStatus, description)
 	}
+
+	fmt.Println()
 
 	return nil // Successfully printed table
 }
