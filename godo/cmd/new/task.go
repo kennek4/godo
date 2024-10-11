@@ -4,8 +4,6 @@ Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 package new
 
 import (
-	"fmt"
-
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/dbdriver"
@@ -38,23 +36,13 @@ do not have any spaces.
 }
 
 func createTask(title *string, description *string) error {
-
-	fmt.Println("Hello")
-	cfgData, err := configs.GetConfig(cmd.GodoDir)
-	if err != nil {
-		return fmt.Errorf("something went wrong in fetching the config")
-	}
-	fmt.Printf("cfgData.CurrentGroup Value => %s\n", cfgData.CurrentGroup)
-
-	table := cfgData.CurrentGroup
-	fmt.Println(table)
-
-	err = dbdriver.InsertTaskInDB(title, description, &table, &cmd.GodoDir)
+	table := configs.GetCurrentGroup(cmd.GodoDir)
+	err := dbdriver.InsertTaskInDB(title, description, &table, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return nil // Task created successfully
 }
 
 func init() {
