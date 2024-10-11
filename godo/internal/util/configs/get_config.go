@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func GetConfig(dirPath string) (cfg ConfigFile, err error) {
+func getConfig(dirPath string) (cfg ConfigFile, err error) {
 
 	var configData ConfigFile
 	configPath := filepath.Join(dirPath, ".godoCfg.json")
@@ -31,4 +31,13 @@ func GetConfig(dirPath string) (cfg ConfigFile, err error) {
 	}
 
 	return configData, nil
+}
+
+func GetCurrentGroup(dirPath string) string {
+	config, err := getConfig(dirPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return config.CurrentGroup
 }
