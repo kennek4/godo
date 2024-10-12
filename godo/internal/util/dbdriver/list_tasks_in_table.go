@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kennek4/godo/internal/util/consolehelper"
+	"github.com/kennek4/godo/internal/util/console"
 	"golang.org/x/term"
 )
 
@@ -16,7 +16,7 @@ const (
 
 func ListTasksInTable(tableName *string, dbDir *string) error {
 
-	consolehelper.ClearConsole()
+	console.ClearConsole()
 
 	if tableName == nil {
 		err := fmt.Errorf("in ListTasksInTable, tableName was supplied with a nil string pointer")

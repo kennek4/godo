@@ -9,7 +9,7 @@ import (
 
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
-	"github.com/kennek4/godo/internal/util/consolehelper"
+	"github.com/kennek4/godo/internal/util/console"
 	"github.com/kennek4/godo/internal/util/dbdriver"
 	"github.com/kennek4/godo/internal/util/filehelper"
 	"github.com/spf13/cobra"
@@ -41,7 +41,7 @@ var initCmd = &cobra.Command{
 			err = startInit(defaultTable, true)
 		default:
 			prompt := "godo requires a sqlite database\n"
-			choice, err = consolehelper.PromptUser(&prompt)
+			choice, err = console.PromptUser(&prompt)
 			if err != nil {
 				return err
 			}
