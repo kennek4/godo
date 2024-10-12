@@ -28,7 +28,7 @@ do not have any spaces.
 
 `,
 	Args: cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(command *cobra.Command, args []string) {
 		taskTitle = args[0]
 		taskDescription = "\t" + args[1]
 		createTask(&taskTitle, &taskDescription)
@@ -41,7 +41,8 @@ func createTask(title *string, description *string) error {
 	if err != nil {
 		return err
 	}
-
+	
+	dbdriver.ListTasksInTable(&currentGroup, &cmd.GodoDir)
 	return nil // Task created successfully
 }
 
