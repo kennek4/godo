@@ -2,6 +2,11 @@ package dbdriver
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
+	"github.com/kennek4/godo/internal/util/consolehelper"
+	"golang.org/x/term"
 )
 
 const (
@@ -10,6 +15,8 @@ const (
 )
 
 func ListTasksInTable(tableName *string, dbDir *string) error {
+
+	consolehelper.ClearConsole()
 
 	if tableName == nil {
 		err := fmt.Errorf("in ListTasksInTable, tableName was supplied with a nil string pointer")
@@ -29,6 +36,21 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 		return err
 	}
 
+	table := strings.ToUpper(fmt.Sprintf("%s TASKS", *tableName))
+	fmt.Println(table + "\n")
+
+	width, _, err := term.GetSize(int(os.Stdout.Fd()))
+	if err != nil {
+		return err
+	}
+
+	isFirstColumn := true // The "column" that the task will be printed in
+
+	var line []rune
+	for range width {
+		line = append(line, '-')
+	}
+
 	var id int
 	var title string
 	var description string
@@ -43,10 +65,19 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 		case !isComplete:
 			checkBoxStatus = incomplete
 		}
-		fmt.Printf(`
-%d.) %s [%c]
-%s		
-`, id, title, checkBoxStatus, description)
+
+		switch isFirstColumn {
+		case true:
+			fmt.Printf("\n%d.) %s [%c]\n%s\n", id, title, checkBoxStatus, description)
+		case false:
+			fmt.Printf("\n%d.) %s [%c]\n%s\n", id, title, checkBoxStatus, description)
+		}
+
+		for _, char := range line {
+			fmt.Printf("%c", char)
+		}
+
+		isFirstColumn = !isFirstColumn
 	}
 
 	fmt.Println()
