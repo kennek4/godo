@@ -36,7 +36,7 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 		return err
 	}
 
-	table := strings.ToUpper(fmt.Sprintf("%s TASKS", *tableName))
+	table := strings.ToUpper(fmt.Sprintf("CURRENT GROUP: %s", *tableName))
 	fmt.Println(table + "\n")
 
 	width, _, err := term.GetSize(int(os.Stdout.Fd()))
