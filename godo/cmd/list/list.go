@@ -4,7 +4,11 @@ Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 package list
 
 import (
+	"os"
+
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/kennek4/godo/cmd"
+	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/dbdriver"
 	"github.com/spf13/cobra"
 )
@@ -22,19 +26,40 @@ The following command will show all tasks under the "Code" category.
 
 > godo list Code
 `,
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		taskTable := args[0]
+	Args: cobra.MaximumNArgs(1),
+	Run: func(command *cobra.Command, args []string) {
+		taskTable := configs.GetCurrentGroup(cmd.GodoDir)
+
+		if len(args) > 0 {
+			taskTable = args[0]
+		}
+
 		listTasks(&taskTable)
 	},
 }
 
-func listTasks(table *string) error {
+func listTasks(tableName *string) error {
 
-	err := dbdriver.ListTasksInTable(table, &cmd.GodoDir)
+	tasks, err := dbdriver.ListTasksInTable(tableName, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}
+
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"Task #", "Title", "Description", "Complete"})
+
+	for _, task := range tasks {
+		t.AppendRow(table.Row{
+			task.Id,
+			task.Title,
+			task.Description,
+			task.IsComplete,
+		})
+	}
+
+	t.SetStyle(table.StyleBold)
+	t.Render()
 
 	return nil
 }

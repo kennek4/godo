@@ -4,21 +4,23 @@ import (
 	"fmt"
 )
 
-const (
-	incomplete = ' '
-	complete   = '✔'
-)
+type Task struct {
+	Id          int
+	Title       string
+	Description string
+	IsComplete  bool
+}
 
-func ListTasksInTable(tableName *string, dbDir *string) error {
+func ListTasksInTable(tableName *string, dbDir *string) (tasks []Task, err error) {
 
 	if tableName == nil {
 		err := fmt.Errorf("in ListTasksInTable, tableName was supplied with a nil string pointer")
-		return err
+		return nil, err
 	}
 
 	db, err := GetDB(dbDir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer db.Close()
@@ -26,26 +28,15 @@ func ListTasksInTable(tableName *string, dbDir *string) error {
 	query := fmt.Sprintf("SELECT * FROM %s", *tableName)
 	rows, err := db.Query(query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	
-	var id int
-	var title string
-	var description string
-	var isComplete bool
+
+	// Add all tasks from the query 
 	for rows.Next() {
-		rows.Scan(&id, &title, &description, &isComplete)
-
-		var checkBoxStatus rune
-		switch {
-		case isComplete:
-			checkBoxStatus = complete
-		case !isComplete:
-			checkBoxStatus = incomplete
-		}
-
-		fmt.Printf("[%d] %s [%c]\n%s\n", id, title, checkBoxStatus, description)
+		task := Task{}
+		rows.Scan(&task.Id, &task.Title, &task.Description, &task.IsComplete)
+		tasks = append(tasks, task)
 	}
 
-	return nil // Successfully printed table
+	return tasks, nil // Successfully printed table
 }
