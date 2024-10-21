@@ -5,7 +5,50 @@ import (
 	"fmt"
 	"os"
 	"syscall"
+
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/kennek4/godo/internal/util/gddb"
 )
+
+func DisplayTasks(tasks []gddb.Task, tableName *string) error {
+
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.SetTitle(text.FormatTitle.Apply(*tableName))
+	t.AppendHeader(table.Row{"Task #", "Title", "Description", "Complete"})
+
+	var completeIcon rune
+	var completeness string
+	for _, task := range tasks {
+
+		switch task.IsComplete {
+		case true:
+			completeIcon = '✔'
+			completeness = text.FgHiGreen.Sprintf("%c", completeIcon)
+		case false:
+			completeIcon = '✘'
+			completeness = text.FgHiRed.Sprintf("%c", completeIcon)
+		}
+
+		title := text.WrapSoft(task.Title, 30)
+		description := text.WrapSoft(task.Description, 30)
+
+		t.AppendRow(table.Row{
+			task.Id,
+			title,
+			description,
+			completeness,
+		})
+
+		t.AppendSeparator()
+	}
+
+	t.SetStyle(table.StyleBold)
+	t.Render()
+
+	return nil
+}
 
 func MakeDirHidden(dir *string) error {
 	newDirPtr, err := syscall.UTF16PtrFromString(*dir)
