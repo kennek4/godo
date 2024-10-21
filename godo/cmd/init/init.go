@@ -10,7 +10,7 @@ import (
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/consolehelper"
-	"github.com/kennek4/godo/internal/util/dbdriver"
+	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/kennek4/godo/internal/util/filehelper"
 	"github.com/spf13/cobra"
 )
@@ -98,7 +98,7 @@ func initGodo(defaultTable string, godoDir *string) error {
 	}
 
 	// Initialize DB in .godo
-	err = dbdriver.InitDB(defaultTable, godoDir)
+	err = gddb.InitDB(defaultTable, godoDir)
 	if err != nil {
 		return err
 	}

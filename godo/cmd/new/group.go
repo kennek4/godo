@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util/dbdriver"
+	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
 
@@ -46,7 +46,7 @@ func createGroup(groupName *string) error {
 		return err
 	}
 
-	dbdriver.CreateTableInDB(*groupName, &cmd.GodoDir)
+	gddb.CreateTableInDB(*groupName, &cmd.GodoDir)
 	return nil
 }
 

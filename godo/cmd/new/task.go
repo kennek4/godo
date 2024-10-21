@@ -6,7 +6,7 @@ package new
 import (
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
-	"github.com/kennek4/godo/internal/util/dbdriver"
+	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +37,7 @@ do not have any spaces.
 
 func createTask(title *string, description *string) error {
 	currentGroup := configs.GetCurrentGroup(cmd.GodoDir)
-	err := dbdriver.InsertTaskInDB(title, description, &currentGroup, &cmd.GodoDir)
+	err := gddb.InsertTaskInDB(title, description, &currentGroup, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}

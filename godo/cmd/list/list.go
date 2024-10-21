@@ -10,7 +10,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
-	"github.com/kennek4/godo/internal/util/dbdriver"
+	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
 
@@ -41,7 +41,7 @@ The following command will show all tasks under the "Code" category.
 
 func listTasks(tableName *string) error {
 
-	tasks, err := dbdriver.ListTasksInTable(tableName, &cmd.GodoDir)
+	tasks, err := gddb.ListTasksInTable(tableName, &cmd.GodoDir)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
-	"github.com/kennek4/godo/internal/util/dbdriver"
+	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,7 @@ The following command would change the godo group to one named "Code"
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 
-		tables = dbdriver.ListTablesInDB(&cmd.GodoDir)
+		tables = gddb.ListTablesInDB(&cmd.GodoDir)
 		groupName := args[0]
 
 		if !doesGroupExist(groupName) { // Given argument is not a table in the DB
