@@ -6,10 +6,12 @@ package init
 import (
 	"fmt"
 	"os"
-	"syscall"
 
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util"
+	"github.com/kennek4/godo/internal/util/configs"
+	"github.com/kennek4/godo/internal/util/consolehelper"
+	"github.com/kennek4/godo/internal/util/gddb"
+	"github.com/kennek4/godo/internal/util/filehelper"
 	"github.com/spf13/cobra"
 )
 
@@ -21,28 +23,62 @@ var initCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(0),
 	RunE: func(command *cobra.Command, args []string) error {
 
-		prompt := "godo requires a sqlite database\n"
-		choice, err := util.PromptUser(&prompt)
+		// Get any flags if they exist
+		confirmFlag, err := command.Flags().GetBool("confirm")
 		if err != nil {
 			return err
 		}
 
-		switch {
-		case choice: // User accepted prompt
-			err = initGodo(&cmd.GodoDir)
+		defaultTable, err := command.Flags().GetString("table")
+		if err != nil {
+			return nil
+		}
+
+		var choice bool
+
+		switch confirmFlag {
+		case true:
+			err = startInit(defaultTable, true)
+		default:
+			prompt := "godo requires a sqlite database\n"
+			choice, err = consolehelper.PromptUser(&prompt)
 			if err != nil {
 				return err
 			}
-		case !choice: // User denied prompt
-			return fmt.Errorf("godo requires a directory to work, please try again")
+
+			err = startInit(defaultTable, choice)
+		}
+
+		if err != nil {
+			return err
 		}
 
 		return nil
 	},
 }
 
-func initGodo(godoDir *string) error {
+func startInit(defaultTable string, choice bool) error {
+	var err error
 
+	switch {
+	case choice: // User accepted prompt
+		err = initGodo(defaultTable, &cmd.GodoDir)
+	case !choice: // User denied prompt
+		return fmt.Errorf("godo requires a sqlite database to work, please try again")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func initGodo(defaultTable string, godoDir *string) error {
+
+	if godoDir == nil {
+		return fmt.Errorf("in initGodo, godoDir was passed a nil string pointer")
+	}
 	// Define where .godo will be placed
 
 	if _, err := os.Stat(*godoDir); err == nil {
@@ -56,27 +92,24 @@ func initGodo(godoDir *string) error {
 		return err
 	}
 
-	newDirPtr, err := syscall.UTF16PtrFromString(*godoDir)
-	if err != nil {
-		return err
-	}
-
-	// Set directory to hidden
-	err = syscall.SetFileAttributes(newDirPtr, syscall.FILE_ATTRIBUTE_HIDDEN)
+	err = filehelper.MakeDirHidden(godoDir)
 	if err != nil {
 		return err
 	}
 
 	// Initialize DB in .godo
-	err = util.InitDB(godoDir)
+	err = gddb.InitDB(defaultTable, godoDir)
 	if err != nil {
 		return err
 	}
 
-	// Add files to .gitignore (if present)
+	configs.CreateConfigFile(cmd.GodoDir, defaultTable)
+
 	return nil
 }
 
 func init() {
 	cmd.RootCmd.AddCommand(initCmd)
+	initCmd.Flags().BoolP("confirm", "c", false, "Used to accept the prompt without it being shown")
+	initCmd.Flags().StringP("table", "t", "tasks", "Used to set the default SQLite database table")
 }

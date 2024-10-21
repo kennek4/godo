@@ -17,8 +17,7 @@ var (
 	// The directory location of .godo
 	GodoDir string
 
-	// This path ends in a godo.db
-	GodoDbPath string
+	CurrentGroup string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -42,8 +41,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	CurrentWorkingDirectory = currWd
+	
 	GodoDir = filepath.Join(currWd, ".godo")
-	GodoDbPath = filepath.Join(GodoDir, "godo.db")
 }
