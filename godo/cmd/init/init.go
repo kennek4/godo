@@ -9,9 +9,8 @@ import (
 
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
-	"github.com/kennek4/godo/internal/util/consolehelper"
 	"github.com/kennek4/godo/internal/util/gddb"
-	"github.com/kennek4/godo/internal/util/filehelper"
+	"github.com/kennek4/godo/internal/util/gdmisc"
 	"github.com/spf13/cobra"
 )
 
@@ -41,7 +40,7 @@ var initCmd = &cobra.Command{
 			err = startInit(defaultTable, true)
 		default:
 			prompt := "godo requires a sqlite database\n"
-			choice, err = consolehelper.PromptUser(&prompt)
+			choice, err = gdmisc.PromptUser(&prompt)
 			if err != nil {
 				return err
 			}
@@ -92,7 +91,7 @@ func initGodo(defaultTable string, godoDir *string) error {
 		return err
 	}
 
-	err = filehelper.MakeDirHidden(godoDir)
+	err = gdmisc.MakeDirHidden(godoDir)
 	if err != nil {
 		return err
 	}

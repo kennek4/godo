@@ -1,10 +1,26 @@
-package consolehelper
+package gdmisc
 
 import (
 	"bufio"
 	"fmt"
 	"os"
+	"syscall"
 )
+
+func MakeDirHidden(dir *string) error {
+	newDirPtr, err := syscall.UTF16PtrFromString(*dir)
+	if err != nil {
+		return err
+	}
+
+	// Set directory to hidden
+	err = syscall.SetFileAttributes(newDirPtr, syscall.FILE_ATTRIBUTE_HIDDEN)
+	if err != nil {
+		return err
+	}
+
+	return nil // Directory is now hidden
+}
 
 // Prompts the user if they would like to proceed by asking Y/n
 func PromptUser(prompt *string) (userResponse bool, err error) {
