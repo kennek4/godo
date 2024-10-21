@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/dbdriver"
@@ -18,7 +19,7 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Lists godo tasks",
 	Long: `This command lists godo tasks, by default prints out all tasks.
-An optional argument can be provided to sort the category of tasks to show.
+An optional argument can be provided to sort the group of tasks to show.
 
 Example:
 
@@ -47,15 +48,33 @@ func listTasks(tableName *string) error {
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
+	t.SetTitle(text.FormatTitle.Apply(*tableName))
 	t.AppendHeader(table.Row{"Task #", "Title", "Description", "Complete"})
 
+	var completeIcon rune
+	var completeness string
 	for _, task := range tasks {
+
+		switch task.IsComplete {
+		case true:
+			completeIcon = '✔'
+			completeness = text.FgHiGreen.Sprintf("%c", completeIcon)
+		case false:
+			completeIcon = '✘'
+			completeness = text.FgHiRed.Sprintf("%c", completeIcon)
+		}
+
+		title := text.WrapSoft(task.Title, 30)
+		description := text.WrapSoft(task.Description, 30)
+
 		t.AppendRow(table.Row{
 			task.Id,
-			task.Title,
-			task.Description,
-			task.IsComplete,
+			title,
+			description,
+			completeness,
 		})
+
+		t.AppendSeparator()
 	}
 
 	t.SetStyle(table.StyleBold)

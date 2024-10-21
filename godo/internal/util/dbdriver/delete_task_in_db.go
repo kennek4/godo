@@ -41,6 +41,8 @@ func DeleteTaskInDB(queryType DeleteType, dbTable string, thingToDelete *interfa
 	defer db.Close()
 
 	query := getQueryString(queryType, dbTable, thingToDelete)
+	fmt.Printf("query: %v\n", query)
+
 	statement, err := db.Prepare(query)
 	if err != nil {
 		return err

@@ -7,16 +7,16 @@ import (
 )
 
 func SetCurrentGroup(newGroup string, dirPath string) error {
+
 	config, err := getConfig(dirPath)
 	if err != nil {
 		return err
 	}
 
-	config.CurrentGroup = newGroup // Change values in JSON struct
+	config.CurrentGroup = newGroup
+	jsonPath := filepath.Join(dirPath, ".godoCfg.json") // Open to JSON file
 
-	jsonPath := filepath.Join(dirPath, ".godoCfg.json")
-
-	file, err := os.Open(jsonPath) // Open the JSON file
+	file, err := os.Open(jsonPath)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func SetCurrentGroup(newGroup string, dirPath string) error {
 		return err
 	}
 
-	err = os.WriteFile(file.Name(), data, 0777) // Write JSON data into file
+	err = os.WriteFile(file.Name(), data, 0777) // Write to JSON data into file
 	if err != nil {
 		return err
 	}
