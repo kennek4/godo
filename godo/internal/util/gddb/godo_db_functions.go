@@ -3,11 +3,15 @@ package gddb
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
+type Group struct {
+	Name      string
+	TaskCount uint8
+}
 
 type Task struct {
 	Id          int
@@ -71,28 +75,34 @@ func InsertTaskInDB(title *string, description *string, table *string, dbDir *st
 	return nil
 }
 
-func ListTablesInDB(dbDir *string) []string {
+func GetGroupsFromDB(dbDir *string) (tables []Group, err error) {
 	db, err := GetDB(dbDir)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	query := `SELECT tbl_name FROM sqlite_master WHERE type="table"`
 	rows, err := db.Query(query)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	var tableName string
-	var tables []string
 	for rows.Next() {
-		rows.Scan(&tableName)
-		tables = append(tables, tableName)
+		group := Group{}
+		rows.Scan(&group.Name)
+		
+		err = db.QueryRow(fmt.Sprintf(`SELECT COUNT(*) FROM %s`, group.Name)).Scan(&group.TaskCount)
+		if err != nil {
+			return nil, err
+		}
+
+		tables = append(tables, group)
 	}
 
-	return tables
+	return tables, nil
 }
-func ListTasksInTable(tableName *string, dbDir *string) (tasks []Task, err error) {
+
+func GetTasksFromDB(tableName *string, dbDir *string) (tasks []Task, err error) {
 
 	if tableName == nil {
 		err := fmt.Errorf("in ListTasksInTable, tableName was supplied with a nil string pointer")

@@ -31,10 +31,12 @@ The following command will show all tasks under the "Code" category.
 		if len(args) > 0 {
 			taskTable = args[0]
 		}
-		tasks, err := gddb.ListTasksInTable(&taskTable, &cmd.GodoDir)
+
+		tasks, err := gddb.GetTasksFromDB(&taskTable, &cmd.GodoDir)
 		if err != nil {
 			return err
 		}
+
 		gdmisc.DisplayTasks(tasks, &taskTable)
 		return nil
 	},
