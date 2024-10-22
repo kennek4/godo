@@ -30,7 +30,7 @@ do not have any spaces.
 	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskTitle = args[0]
-		taskDescription = "\t" + args[1]
+		taskDescription = args[1]
 		createTask(&taskTitle, &taskDescription)
 	},
 }
