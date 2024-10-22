@@ -11,6 +11,24 @@ import (
 	"github.com/kennek4/godo/internal/util/gddb"
 )
 
+func DisplayGroups(groups []gddb.Group) error {
+
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.SetTitle(text.FormatUpper.Apply("List of Groups"))
+	t.AppendHeader(table.Row{"Group Name", "Task Count"})
+
+	for _, group := range groups {
+		t.AppendRow(table.Row{group.Name, group.TaskCount})
+		t.AppendSeparator()
+	}
+
+	t.SetStyle(table.StyleBold)
+	t.Render()
+
+	return nil
+}
+
 func DisplayTasks(tasks []gddb.Task, tableName *string) error {
 
 	t := table.NewWriter()
