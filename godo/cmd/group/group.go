@@ -12,8 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var tables []string
-
 // groupCmd represents the group command
 var groupCmd = &cobra.Command{
 	Use:   "group",
@@ -24,10 +22,13 @@ The following command would change the godo group to one named "Code"
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 
-		tables = gddb.ListTablesInDB(&cmd.GodoDir)
+		groups, err := gddb.GetGroupsFromDB(&cmd.GodoDir)
+		if err != nil {
+			return err
+		}
 		groupName := args[0]
 
-		if !doesGroupExist(groupName) { // Given argument is not a table in the DB
+		if !doesGroupExist(groups, groupName) { // Given argument is not a table in the DB
 			err := fmt.Errorf("the table, %s, does not exist in the godo db, please check your spelling or try again", groupName)
 			return err
 		} else { // Given argument exists
@@ -38,9 +39,9 @@ The following command would change the godo group to one named "Code"
 	},
 }
 
-func doesGroupExist(groupName string) bool {
-	for _, value := range tables {
-		if value == groupName {
+func doesGroupExist(groups []gddb.Group, groupName string) bool {
+	for _, group := range groups {
+		if group.Name == groupName {
 			return true
 		}
 	}
