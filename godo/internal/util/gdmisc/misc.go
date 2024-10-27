@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"syscall"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -66,21 +65,6 @@ func DisplayTasks(tasks []gddb.Task, tableName *string) error {
 	t.Render()
 
 	return nil
-}
-
-func MakeDirHidden(dir *string) error {
-	newDirPtr, err := syscall.UTF16PtrFromString(*dir)
-	if err != nil {
-		return err
-	}
-
-	// Set directory to hidden
-	err = syscall.SetFileAttributes(newDirPtr, syscall.FILE_ATTRIBUTE_HIDDEN)
-	if err != nil {
-		return err
-	}
-
-	return nil // Directory is now hidden
 }
 
 // Prompts the user if they would like to proceed by asking Y/n
