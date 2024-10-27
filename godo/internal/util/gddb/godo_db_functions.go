@@ -75,6 +75,33 @@ func InsertTaskInDB(title *string, description *string, table *string, dbDir *st
 	return nil
 }
 
+
+func EditTaskTitle(taskId int, newTitle *string, table *string, dbDir *string) error {
+	if newTitle == nil || table == nil || dbDir == nil {
+		return fmt.Errorf("in EditTaskTitle, a supplied argument is a nil string pointer")
+	}
+	
+	db, err := GetDB(dbDir)
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	query := fmt.Sprintf("UPDATE %s SET title = '%s' WHERE id = %d", *table, *newTitle, taskId)
+	statement, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	_, err = statement.Exec()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func GetGroupsFromDB(dbDir *string) (tables []Group, err error) {
 	db, err := GetDB(dbDir)
 	if err != nil {

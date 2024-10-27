@@ -4,13 +4,33 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/kennek4/godo/internal/util/gddb"
 )
 
+func ClearConsole() {
+
+	var cmd *exec.Cmd
+	goos := runtime.GOOS
+
+	switch goos {
+	case "linux":
+		cmd = exec.Command("clear")
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "cls")
+	}
+
+	cmd.Stdout = os.Stdout
+	cmd.Run()
+}
+
 func DisplayGroups(groups []gddb.Group) error {
+
+	ClearConsole()
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
@@ -29,6 +49,8 @@ func DisplayGroups(groups []gddb.Group) error {
 }
 
 func DisplayTasks(tasks []gddb.Task, tableName *string) error {
+
+	ClearConsole()
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
