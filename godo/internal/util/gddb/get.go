@@ -1,6 +1,9 @@
 package gddb
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type Group struct {
 	Name      string
@@ -14,7 +17,7 @@ type Task struct {
 	IsComplete  bool
 }
 
-func GetGroup() (groups []Group, err error) {
+func GetGroups() (groups []Group, err error) {
 	if GodoDb == nil {
 		return nil, ErrDbNotInitialized
 	}
@@ -25,23 +28,29 @@ func GetGroup() (groups []Group, err error) {
 		return nil, err
 	}
 
-	stmt, err := GodoDb.Prepare("SELECT COUNT(*) FROM ?")
-	if err != nil {
-		return nil, err
-	}
-
-	defer stmt.Close()
+	var stmt *sql.Stmt
 
 	for rows.Next() {
 		group := Group{}
 		rows.Scan(&group.Name)
 
-		err = stmt.QueryRow(group.Name).Scan(&group.TaskCount)
+		cleansed := fmt.Sprintf(`SELECT COUNT(*) FROM "%s"`, group.Name)
+		stmt, err = GodoDb.Prepare(cleansed)
 		if err != nil {
 			return nil, err
 		}
 
+		err = stmt.QueryRow().Scan(&group.TaskCount)
+		if err != nil {
+			return nil, err
+
+		}
+
 		groups = append(groups, group)
+	}
+
+	if stmt != nil {
+		stmt.Close()
 	}
 
 	return groups, nil

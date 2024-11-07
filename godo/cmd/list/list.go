@@ -13,10 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	taskGroup string
-)
-
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
@@ -32,22 +28,36 @@ The following command will show all tasks under the "Code" category.
 `,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
-		if len(args) > 0 {
-			taskGroup = args[0]
-		} else {
-			taskGroup = genv.GetVar("CurrentGroup")
-		}
 
-		tasks, err := gddb.GetTasks(taskGroup)
+		groupFlag, err := command.Flags().GetBool("group")
 		if err != nil {
-			return fmt.Errorf("failed to get tasks from Godo, %s", err)
+			return err
 		}
 
-		gdmisc.DisplayTasks(tasks, &taskGroup)
+		switch groupFlag {
+		case true: // Print Groups
+			groups, err := gddb.GetGroups()
+			if err != nil {
+				return fmt.Errorf("failed to get groups from Godo, %s", err)
+			}
+
+			gdmisc.DisplayGroups(groups)
+
+		case false: // Print Tasks
+			taskGroup := genv.GetVar("CurrentGroup")
+			tasks, err := gddb.GetTasks(taskGroup)
+			if err != nil {
+				return fmt.Errorf("failed to get tasks from Godo, %s", err)
+			}
+
+			gdmisc.DisplayTasks(tasks, &taskGroup)
+		}
+
 		return nil
 	},
 }
 
 func init() {
+	listCmd.Flags().BoolP("group", "g", false, "Used to list all Godo groups")
 	cmd.RootCmd.AddCommand(listCmd)
 }
