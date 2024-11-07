@@ -25,18 +25,18 @@ func GetGroup() (groups []Group, err error) {
 		return nil, err
 	}
 
-	statement, err := GodoDb.Prepare("SELECT COUNT(*) FROM ?")
+	stmt, err := GodoDb.Prepare("SELECT COUNT(*) FROM ?")
 	if err != nil {
 		return nil, err
 	}
 
-	defer statement.Close()
+	defer stmt.Close()
 
 	for rows.Next() {
 		group := Group{}
 		rows.Scan(&group.Name)
 
-		err = statement.QueryRow(group.Name).Scan(&group.TaskCount)
+		err = stmt.QueryRow(group.Name).Scan(&group.TaskCount)
 		if err != nil {
 			return nil, err
 		}
