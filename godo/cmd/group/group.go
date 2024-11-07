@@ -22,7 +22,7 @@ The following command would change the godo group to one named "Code"
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 
-		groups, err := gddb.GetGroup()
+		groups, err := gddb.GetGroups()
 		if err != nil {
 			return err
 		}
