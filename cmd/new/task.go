@@ -4,15 +4,16 @@ Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 package new
 
 import (
+	"bufio"
+	"fmt"
+	"os"
+
 	"github.com/kennek4/genv"
 	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
 
-var (
-	taskTitle       string
-	taskDescription string
-)
+var group string
 
 // taskCmd represents the task command and is a subcommand of new
 var taskCmd = &cobra.Command{
@@ -26,17 +27,56 @@ You do not need quotation marks if your arguments
 do not have any spaces.
 
 `,
-	Args: cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
-		taskTitle = args[0]
-		taskDescription = args[1]
-		createTask(&taskTitle, &taskDescription)
+	Args: cobra.MaximumNArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) error {
+
+		titleFlag, err := cmd.Flags().GetString("title")
+		if err != nil {
+			return err
+		}
+
+		descFlag, err := cmd.Flags().GetString("desc")
+		if err != nil {
+			return err
+		}
+
+		flagsProvided := titleFlag == "" && descFlag == ""
+		group = genv.GetVar("CurrentGroup")
+
+		switch flagsProvided {
+		case true:
+			err = createTask()
+			if err != nil {
+				return err
+			}
+		case false:
+			err = gddb.CreateTask(titleFlag, descFlag, &group)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
 	},
 }
 
-func createTask(title *string, desc *string) error {
-	group := genv.GetVar("CurrentGroup")
-	err := gddb.CreateTask(*title, *desc, &group)
+func createTask() error {
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Task Title: ")
+	taskTitle, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	fmt.Print("Description: ")
+	taskDesc, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	err = gddb.CreateTask(taskTitle, taskDesc, &group)
 	if err != nil {
 		return err
 	}
@@ -45,7 +85,10 @@ func createTask(title *string, desc *string) error {
 }
 
 func init() {
-	taskCmd.PersistentFlags().StringVarP(&taskTitle, "title", "t", "", "name of the task")
-	taskCmd.PersistentFlags().StringVarP(&taskDescription, "description", "d", "", "details of the task")
+	taskCmd.Flags().StringP("title", "t", "", "name of the task")
+	taskCmd.Flags().StringP("desc", "d", "", "details of the task")
+
+	taskCmd.MarkFlagsRequiredTogether("title", "desc")
+
 	newCmd.AddCommand(taskCmd)
 }
