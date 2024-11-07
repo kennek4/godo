@@ -4,7 +4,6 @@ Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 package group
 
 import (
-	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/kennek4/godo/internal/util/gdmisc"
 	"github.com/spf13/cobra"
@@ -27,7 +26,7 @@ it will also show how many tasks are in the current group.`,
 }
 
 func listGroups() error {
-	groups, err := gddb.GetGroupsFromDB(&cmd.GodoDir)
+	groups, err := gddb.GetGroup()
 	if err != nil {
 		return err
 	}

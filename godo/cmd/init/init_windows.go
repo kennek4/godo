@@ -5,10 +5,9 @@ package init
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/kennek4/genv"
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/kennek4/godo/internal/util/gdmisc"
 	"github.com/spf13/cobra"
@@ -28,7 +27,7 @@ var initCmd = &cobra.Command{
 			return err
 		}
 
-		defaultTable, err := command.Flags().GetString("table")
+		defaultGroup, err := command.Flags().GetString("group")
 		if err != nil {
 			return nil
 		}
@@ -37,7 +36,7 @@ var initCmd = &cobra.Command{
 
 		switch confirmFlag {
 		case true:
-			err = startInit(defaultTable, true)
+			err = startInit(defaultGroup, true)
 		default:
 			prompt := "godo requires a sqlite database\n"
 			choice, err = gdmisc.PromptUser(&prompt)
@@ -45,7 +44,7 @@ var initCmd = &cobra.Command{
 				return err
 			}
 
-			err = startInit(defaultTable, choice)
+			err = startInit(defaultGroup, choice)
 		}
 
 		if err != nil {
@@ -56,12 +55,12 @@ var initCmd = &cobra.Command{
 	},
 }
 
-func startInit(defaultTable string, choice bool) error {
+func startInit(defaultGroup string, choice bool) error {
 	var err error
 
 	switch {
 	case choice: // User accepted prompt
-		err = initGodo(defaultTable, &cmd.GodoDir)
+		err = initGodo(defaultGroup, &cmd.GodoDir)
 	case !choice: // User denied prompt
 		return fmt.Errorf("godo requires a sqlite database to work, please try again")
 	}
@@ -78,31 +77,14 @@ func initGodo(defaultTable string, godoDir *string) error {
 	if godoDir == nil {
 		return fmt.Errorf("in initGodo, godoDir was passed a nil string pointer")
 	}
-	// Define where .godo will be placed
-
-	if _, err := os.Stat(*godoDir); err == nil {
-		// go-do is already initialized
-		return fmt.Errorf("godo is already initialized in this directory")
-	}
-
-	// Create new .godo directory
-	err := os.Mkdir(*godoDir, 0777)
-	if err != nil && os.IsNotExist(err) {
-		return err
-	}
-
-	err = gdmisc.MakeDirHidden(godoDir)
-	if err != nil {
-		return err
-	}
 
 	// Initialize DB in .godo
-	err = gddb.InitDB(defaultTable, godoDir)
+	err := gddb.Load(*godoDir)
 	if err != nil {
 		return err
 	}
 
-	configs.CreateConfigFile(cmd.GodoDir, defaultTable)
+	genv.CreateStringVar("CurrentGroup", defaultTable)
 
 	return nil
 }
@@ -110,5 +92,5 @@ func initGodo(defaultTable string, godoDir *string) error {
 func init() {
 	cmd.RootCmd.AddCommand(initCmd)
 	initCmd.Flags().BoolP("confirm", "c", false, "Used to accept the prompt without it being shown")
-	initCmd.Flags().StringP("table", "t", "tasks", "Used to set the default SQLite database table")
+	initCmd.Flags().StringP("group", "g", "tasks", "Used to set the default SQLite database table")
 }

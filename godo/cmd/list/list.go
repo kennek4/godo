@@ -4,11 +4,17 @@ Copyright © 2024 Ken Tabanay kentabanay@gmail.com
 package list
 
 import (
+	"fmt"
+
+	"github.com/kennek4/genv"
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/kennek4/godo/internal/util/gdmisc"
 	"github.com/spf13/cobra"
+)
+
+var (
+	taskGroup string
 )
 
 // listCmd represents the list command
@@ -26,18 +32,18 @@ The following command will show all tasks under the "Code" category.
 `,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
-		taskTable := configs.GetCurrentGroup(cmd.GodoDir)
-
 		if len(args) > 0 {
-			taskTable = args[0]
+			taskGroup = args[0]
+		} else {
+			taskGroup = genv.GetVar("CurrentGroup")
 		}
 
-		tasks, err := gddb.GetTasksFromDB(&taskTable, &cmd.GodoDir)
+		tasks, err := gddb.GetTasks(taskGroup)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get tasks from Godo, %s", err)
 		}
 
-		gdmisc.DisplayTasks(tasks, &taskTable)
+		gdmisc.DisplayTasks(tasks, &taskGroup)
 		return nil
 	},
 }

@@ -7,18 +7,24 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/kennek4/genv"
+	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
 
-var (
-	CurrentWorkingDirectory string
-
-	// The directory location of .godo
-	GodoDir string
-
-	CurrentGroup string
+const (
+	AppName string = "Godo"
+	EnvFile string = ".GODO.env"
 )
+
+var (
+	EnvFilePath string
+	GodoDir     string
+)
+
+var ()
 
 // rootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -32,15 +38,45 @@ var RootCmd = &cobra.Command{
 func Execute() {
 	err := RootCmd.Execute()
 	if err != nil {
+		genv.Save()
+
+		if gddb.GodoDb != nil {
+			gddb.Close(gddb.GodoDb)
+		}
+
 		os.Exit(1)
 	}
 }
-
 func init() {
-	currWd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
+
+	home, _ := os.UserHomeDir()
+	titleAppName := strings.ToTitle(AppName)
+
+	GodoDir = filepath.Join(home, "."+titleAppName)
+	EnvFilePath = filepath.Join(GodoDir, EnvFile)
+
+	// Check if Godo directory exists
+	_, err := os.Stat(EnvFilePath)
+	switch os.IsNotExist(err) {
+	case true:
+		err = genv.Init(AppName)
+		if err != nil {
+			log.Fatalf("Failed to initialize godo, %s", err)
+		}
+		genv.CreateStringVar("CurrentGroup", "")
+
+	case false:
+		err = genv.Load(AppName)
+		if err != nil {
+			log.Fatalf("Failed to load godo config file, %s", err)
+		}
+
+		err = gddb.Load(GodoDir)
+		if err != nil {
+			log.Fatalf("Failed to load godo.db, %s", err)
+		}
+
+	default:
+		log.Fatal("Something went catastrophically wrong during root.init()")
 	}
-	
-	GodoDir = filepath.Join(currWd, ".godo")
 }

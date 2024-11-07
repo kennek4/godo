@@ -4,10 +4,14 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package delete
 
 import (
+	"github.com/kennek4/genv"
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
+)
+
+var (
+	arguments []string
 )
 
 // deleteCmd represents the delete command
@@ -31,19 +35,19 @@ The following example will delete a task with the title "Review Code"
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		var thingToDelete interface{}
+		titles, _ := cmd.Flags().GetStringArray("title")
+		ids, _ := cmd.Flags().GetStringArray("id")
 
-		// groupFlag, _ := cmd.Flags().GetString("group")
-		titleFlag, _ := cmd.Flags().GetString("title")
-
-		if titleFlag != "" {
-			thingToDelete = titleFlag
-			err := deleteTask(1, &thingToDelete)
+		// Only one of these will have values
+		if len(titles) > 0 {
+			err := deleteTask(gddb.Title, titles)
 			if err != nil {
 				return err
 			}
-		} else {
-			err := deleteTask(2, &thingToDelete)
+		}
+
+		if len(ids) > 0 {
+			err := deleteTask(gddb.Id, ids)
 			if err != nil {
 				return err
 			}
@@ -53,18 +57,24 @@ The following example will delete a task with the title "Review Code"
 	},
 }
 
-func deleteTask(quertyType gddb.DeleteType, thingToDelete *interface{}) error {
-	currentGroup := configs.GetCurrentGroup(cmd.GodoDir)
-	err := gddb.DeleteTaskInDB(quertyType, currentGroup, thingToDelete, &cmd.GodoDir)
+func deleteTask(deleteType gddb.DeleteType, taskProperties []string) error {
+
+	group := genv.GetVar("CurrentGroup")
+	err := gddb.Delete(deleteType, group, taskProperties)
 	if err != nil {
 		return err
 	}
 
-	return nil // Task deleted
+	return nil // Task(s) deleted
 }
 
 func init() {
-	// deleteCmd.Flags().StringP("group", "g", "", "The group the user wishes to delete")
-	deleteCmd.Flags().StringP("title", "t", "", "The title of the task the user wishes to delete")
+	deleteCmd.Flags().StringArrayVarP(&arguments, "title", "t", arguments, "The title of the task the user wishes to delete")
+	deleteCmd.Flags().StringArrayVarP(&arguments, "id", "i", arguments, "The ID of the task the user wishes to delete")
+
+	// Either is required but both flags can not be set
+	deleteCmd.MarkFlagsOneRequired("title", "id")
+	deleteCmd.MarkFlagsMutuallyExclusive("title", "id")
+
 	cmd.RootCmd.AddCommand(deleteCmd)
 }

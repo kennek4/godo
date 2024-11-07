@@ -6,7 +6,6 @@ package new
 import (
 	"fmt"
 
-	"github.com/kennek4/godo/cmd"
 	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
@@ -46,7 +45,7 @@ func createGroup(groupName *string) error {
 		return err
 	}
 
-	gddb.CreateTableInDB(*groupName, &cmd.GodoDir)
+	gddb.CreateGroup(*groupName)
 	return nil
 }
 

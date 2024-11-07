@@ -6,8 +6,8 @@ package group
 import (
 	"fmt"
 
+	"github.com/kennek4/genv"
 	"github.com/kennek4/godo/cmd"
-	"github.com/kennek4/godo/internal/util/configs"
 	"github.com/kennek4/godo/internal/util/gddb"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +22,7 @@ The following command would change the godo group to one named "Code"
 	Args: cobra.MinimumNArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 
-		groups, err := gddb.GetGroupsFromDB(&cmd.GodoDir)
+		groups, err := gddb.GetGroup()
 		if err != nil {
 			return err
 		}
@@ -32,7 +32,7 @@ The following command would change the godo group to one named "Code"
 			err := fmt.Errorf("the table, %s, does not exist in the godo db, please check your spelling or try again", groupName)
 			return err
 		} else { // Given argument exists
-			configs.SetCurrentGroup(groupName, cmd.GodoDir) // Set new CurrentGroup
+			genv.CreateStringVar("CurrentGroup", groupName)
 		}
 
 		return nil

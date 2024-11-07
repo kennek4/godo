@@ -12,6 +12,7 @@ import (
 	"github.com/kennek4/godo/internal/util/gddb"
 )
 
+
 func ClearConsole() {
 
 	var cmd *exec.Cmd
@@ -49,8 +50,6 @@ func DisplayGroups(groups []gddb.Group) error {
 }
 
 func DisplayTasks(tasks []gddb.Task, tableName *string) error {
-
-	ClearConsole()
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
